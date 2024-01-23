@@ -45,9 +45,9 @@ describe('GET', () => {
 })
 
 describe('GET/:id', () => {
-  it('should return 405 if sprint does not exist', async () => {
-    const { body } = await supertest(app).get('/sprints/999').expect(405)
-    expect(body.error.message).toEqual('Method not allowed')
+  it('should return 404 if sprint does not exist', async () => {
+    const { body } = await supertest(app).get('/sprints/999').expect(404)
+    expect(body.error.message).toEqual('Sprint not found')
   })
 
   it('should return a sprint if exists', async () => {
@@ -103,15 +103,15 @@ describe('POST', () => {
 })
 
 describe('PATCH', () => {
-  it('should return 405 if sprint does not exist', async () => {
+  it('should return 404 if sprint does not exist', async () => {
     const { body } = await supertest(app)
       .patch('/sprints/999')
       .send({
         sprintCode: 'WD-1.4',
         title: 'Computer Science Fundamentals: Project',
       })
-      .expect(405)
-    expect(body.error.message).toEqual('Method not allowed')
+      .expect(404)
+    expect(body.error.message).toEqual('Sprint not found')
   })
 
   it('it allows partial update', async () => {

@@ -3,7 +3,7 @@ import { type Database } from '@/database'
 import { jsonRoute } from '@/utils/middleware'
 import buildRepository from './repository'
 import * as schema from './schema'
-import MethodNotAllowed from '@/utils/errors/MethodNotAllowed'
+import SprintNotFound from './error'
 import { StatusCodes } from 'http-status-codes'
 
 export default (db: Database) => {
@@ -23,7 +23,7 @@ export default (db: Database) => {
       const id = schema.parseId(req.params.id)
       const record = await sprints.findById(id)
       if (!record) {
-        throw new MethodNotAllowed()
+        throw new SprintNotFound()
       }
       return record
     })
@@ -43,7 +43,7 @@ export default (db: Database) => {
       const record = await sprints.update(id, bodyPatch)
 
       if (!record) {
-        throw new MethodNotAllowed()
+        throw new SprintNotFound()
       }
       return record
     })

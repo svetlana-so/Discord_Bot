@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes'
 import { jsonRoute } from '@/utils/middleware'
 import buildRepository from './repository'
 import * as schema from './schema'
-import MethodNotAllowed from '@/utils/errors/MethodNotAllowed'
+import MessagetNotFound from './error'
 
 export default (db: Database) => {
   const templates = buildRepository(db)
@@ -22,8 +22,8 @@ export default (db: Database) => {
     jsonRoute(async (req) => {
       const id = schema.parseId(req.params.id)
       const record = await templates.findById(id)
-      if (record.length === 0) {
-        throw new MethodNotAllowed()
+      if (!record) {
+        throw new MessagetNotFound()
       }
       return record
     })
@@ -43,7 +43,7 @@ export default (db: Database) => {
       const record = await templates.update(id, bodyPatch)
 
       if (!record) {
-        throw new MethodNotAllowed()
+        throw new MessagetNotFound()
       }
       return record
     })

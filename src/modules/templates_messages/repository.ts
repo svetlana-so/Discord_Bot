@@ -10,16 +10,24 @@ type RowUpdate = Updateable<RowWithoutId>
 type RowSelect = Selectable<Row>
 
 export default (db: Database) => ({
-  findAll: async () => db.selectFrom(TABLE).selectAll().execute(),
-  findById: async (id: number) =>
-    db.selectFrom(TABLE).select(keys).where('id', '=', id).execute(),
-  addMessage: async (record: RowInsert) =>
-    db.insertInto(TABLE).values(record).returning(keys).executeTakeFirst(),
-
-  update: async (
-    id: number,
-    partial: RowUpdate
-  ): Promise<RowSelect | undefined> => {
+  findAll(): Promise<RowSelect[]> {
+    return db.selectFrom(TABLE).select(keys).execute()
+  },
+  findById(id: number): Promise<RowSelect | undefined> {
+    return db
+      .selectFrom(TABLE)
+      .select(keys)
+      .where('id', '=', id)
+      .executeTakeFirst()
+  },
+  addMessage(record: RowInsert): Promise<RowSelect | undefined> {
+    return db
+      .insertInto(TABLE)
+      .values(record)
+      .returning(keys)
+      .executeTakeFirst()
+  },
+  update(id: number, partial: RowUpdate): Promise<RowSelect | undefined> {
     if (Object.keys(partial).length === 0) {
       // @ts-ignore
       return this.findById(id)
@@ -27,6 +35,13 @@ export default (db: Database) => ({
     return db
       .updateTable(TABLE)
       .set(partial)
+      .where('id', '=', id)
+      .returning(keys)
+      .executeTakeFirst()
+  },
+  remove(id: number) {
+    return db
+      .deleteFrom(TABLE)
       .where('id', '=', id)
       .returning(keys)
       .executeTakeFirst()
