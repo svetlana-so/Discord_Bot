@@ -10,6 +10,7 @@ const schema = z.object({
 
 const insertable = schema.omit({ id: true })
 /* const partial = insertable.partial() */
+
 export const parseInsertable = (record: unknown) => insertable.parse(record)
 export const keys: (keyof Student)[] = Object.keys(
   schema.shape

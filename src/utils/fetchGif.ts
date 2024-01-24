@@ -26,10 +26,10 @@ export default async function fetchGif() {
       return data.data.images.original.url as string
     } else {
       console.error('Giphy API response does not contain the expected data:')
-      return undefined
+      return null
     }
   } catch (error) {
     console.error('Error fetching gif:', error)
-    return undefined
+    return null
   }
 }

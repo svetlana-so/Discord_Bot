@@ -7,7 +7,8 @@ const schema = z.object({
   timestamp: z.coerce.date(),
   studentId: z.number().int().positive(),
   sprintId: z.number().int().positive(),
-  templateId: z.number().int().positive(),
+  templateId: z.number().int().positive().nullable(),
+  url: z.string().url().nullable(),
 })
 
 const insertable = schema.omit({ timestamp: true })

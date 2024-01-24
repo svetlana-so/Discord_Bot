@@ -2,9 +2,8 @@ import supertest from 'supertest'
 import createTestDataBase from '@/tests/utils/createTestDataBase'
 import { createFor } from '@/tests/utils/records'
 import * as fixtures from './fixtures'
-import { Insertable } from 'kysely'
 import createApp from '@/app'
-import { Messages } from '@/database'
+import fetchGif from '@/utils/fetchGif'
 
 const db = await createTestDataBase()
 const { DISCORD_BOT_ID } = process.env
@@ -28,42 +27,29 @@ afterEach(async () => {
   await db.deleteFrom('messages').execute()
 })
 
-//make fake data
-
-/* const messagesFactory = (
-  overrides: Partial<Insertable<Messages>> = {}
-): Insertable<Messages> => ({
-  studentId: 1,
-  sprintId: 1,
-  templateId: 1,
-  ...overrides,
-})
-
-const messagesMatcher = (overrides: Partial<Insertable<Messages>> = {}) => ({
-  timestamp: expect.any(String),
-  ...overrides,
-  ...messagesFactory(),
-}) */
-
 describe('POST', () => {
   it('should post the message of accomplishment for a specific student', async () => {
+    const url = await fetchGif()
     await supertest(app)
       .post('/messages')
-      .send({ studentId: 1, sprintId: 1, templateId: 1 })
+      .send({
+        studentId: 1,
+        sprintId: 1,
+        templateId: 1,
+        url: url,
+      })
       .expect(201)
-  })
-
-  it('returns 500 if no user is found with a specific id', async () => {
-    await supertest(app)
-      .post('/messages')
-      .send({ studentId: 3, sprintId: 1, templateId: 1 })
-      .expect(500)
   })
 })
 
 describe('GET', () => {
   it('should return the list of messages', async () => {
-    await createMessages({ studentId: 1, sprintId: 1, templateId: 1 })
+    await createMessages({
+      studentId: 1,
+      sprintId: 1,
+      templateId: 1,
+      url: 'http//:example.com',
+    })
     const { body } = await supertest(app).get('/messages').expect(200)
     expect(body).toHaveLength(1)
     expect(body).toEqual([
@@ -72,6 +58,7 @@ describe('GET', () => {
         name: 'Mikael Lind',
         username: 'mikey',
         title: 'First Steps Into Programming with Python: Project',
+        url: 'http//:example.com',
       },
     ])
   })

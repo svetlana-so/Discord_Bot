@@ -38,14 +38,16 @@ describe('POST', () => {
   it('should return 201 and create a student', async () => {
     const { body } = await supertest(app)
       .post('/students')
-      .send(studentsFactory())
-      .expect(200)
+      .send(
+        studentsFactory({
+          name: 'Svetlana Soboleva',
+          username: 'sv_so',
+        })
+      )
+      .expect(201)
 
-    expect(Array.isArray(body)).toBe(true)
-    expect(body.length).toBeGreaterThanOrEqual(1)
-
-    expect(body[0]).toHaveProperty('id')
-    expect(body[0]).toHaveProperty('name', 'My Name')
-    expect(body[0]).toHaveProperty('username', 'username')
+    expect(body).toEqual(
+      studentsMatcher({ name: 'Svetlana Soboleva', username: 'sv_so' })
+    )
   })
 })

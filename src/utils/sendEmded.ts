@@ -1,25 +1,23 @@
 import { TextChannel, EmbedBuilder } from 'discord.js'
-import fetchGif from '@/utils/fetchGif'
 
-type Records = [
-  {
-    username: string
-    title: string
-    text: string
-  },
-]
+type Record = {
+  username: string
+  title: string
+  text: string
+  url: string
+}
 
 export default async function sendMessage(
   channel: TextChannel,
-  records: Records
+  records: Record[]
 ) {
   if (channel instanceof TextChannel) {
     const formattedMessage = formatTheMessage(records)
-    const url = await fetchGif()
+
     const myEmbed = new EmbedBuilder()
       .setColor(0x9900ff)
       .setDescription(formattedMessage)
-      .setImage(url as string)
+      .setImage(records[0].url)
       .setTimestamp()
 
     channel.send({ embeds: [myEmbed] })
@@ -28,7 +26,7 @@ export default async function sendMessage(
   }
 }
 
-function formatTheMessage(records: Records) {
+function formatTheMessage(records: Record[]) {
   const formattedMessages = records.map((record) => {
     return `@${record.username} has just completed ${record.title}!\n${record.text}`
   })
