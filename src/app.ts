@@ -5,17 +5,17 @@ import sprints from '@/modules/sprints/controllers'
 import templates from '@/modules/templates_messages/controllers'
 import students from '@/modules/students/controllers'
 import messages from '@/modules/messages/controllers'
-import createBot from './bot'
+import { Client } from 'discord.js'
 
-export default function createApp(db: Database, botToken: string) {
+export default function createApp(db: Database, bot?: Client) {
   const app = express()
   app.use(express.json())
-  const botClient = createBot(botToken)
+ 
 
   app.use('/sprints', sprints(db))
   app.use('/templates', templates(db))
   app.use('/students', students(db))
-  app.use('/messages', messages(db, botClient))
+  app.use('/messages', bot? messages(db, bot): messages(db))
   app.use(jsonErrorHandler)
   return app
 }

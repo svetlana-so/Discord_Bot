@@ -1,8 +1,8 @@
 import 'dotenv/config'
 import createApp from './app'
 import createDatabase from './database'
-/* import createBot from './bot'
- */
+import createBot from './bot'
+
 const { DATABASE_URL } = process.env
 const { DISCORD_BOT_ID } = process.env
 
@@ -16,7 +16,13 @@ if (!DISCORD_BOT_ID) {
 }
 
 const database = createDatabase(DATABASE_URL)
-const app = createApp(database, DISCORD_BOT_ID)
+const bot = createBot(DISCORD_BOT_ID)
+const app = createApp(database, bot)
+
+//make bot optional
+//rempve method
+// https://www.youtube.com/watch?v=5TjXmsJtWZc
+//test discord bot
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`)

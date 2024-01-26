@@ -6,13 +6,8 @@ import createApp from '@/app'
 import { sprintsFactory, sprintsMatcher } from './utils'
 
 const db = await createTestDataBase()
-const { DISCORD_BOT_ID } = process.env
 
-if (!DISCORD_BOT_ID) {
-  throw new Error('Provide DISCORD_BOT_TOKEN in your environment variables')
-}
-
-const app = createApp(db, DISCORD_BOT_ID)
+const app = createApp(db)
 const createSprints = createFor(db, 'sprints')
 
 afterEach(async () => {
@@ -25,6 +20,7 @@ describe('GET', () => {
     const { body } = await supertest(app).get('/sprints').expect(200)
     expect(body).toHaveLength(0)
   })
+  
   it('shpould return a list of existinf sprints', async () => {
     await createSprints([
       sprintsFactory(),
@@ -147,7 +143,14 @@ describe('PATCH', () => {
 })
 
 describe('DELITE', () => {
-  it('does not support deliting', async () => {
-    await supertest(app).delete('/sprints/123').expect(404)
+  it('it delite the sprint by provided id', async () => {
+    const id = 1234
+    await createSprints([sprintsFactory({ id })])
+    await supertest(app).delete('/sprints/1234').expect(200)
+  })
+  it('returns 404 if sprint is not found', async () => {
+    const id = 1234
+    await createSprints([sprintsFactory({ id })])
+    await supertest(app).delete('/sprints/999').expect(404)
   })
 })

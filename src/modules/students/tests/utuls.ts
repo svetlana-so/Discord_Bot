@@ -10,14 +10,6 @@ export const studentsFactory = (
   ...overrides,
 })
 
-/* export const studentsFactoryFull = (
-  overrides: Partial<Insertable<Students>> = {}
-): Students => ({
-  //@ts-ignore
-  id: 1,
-  ...studentsFactory(overrides),
-}) */
-
 export const studentsMatcher = (
   overrides: Partial<Insertable<Students>> = {}
 ) => ({

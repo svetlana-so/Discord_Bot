@@ -11,19 +11,15 @@ export default async function sendMessage(
   channel: TextChannel,
   records: Record[]
 ) {
-  if (channel instanceof TextChannel) {
-    const formattedMessage = formatTheMessage(records)
+  const formattedMessage = formatTheMessage(records)
 
-    const myEmbed = new EmbedBuilder()
-      .setColor(0x9900ff)
-      .setDescription(formattedMessage)
-      .setImage(records[0].url)
-      .setTimestamp()
+  const myEmbed = new EmbedBuilder()
+    .setColor(0x9900ff)
+    .setDescription(formattedMessage)
+    .setImage(records[0].url)
+    .setTimestamp()
 
-    channel.send({ embeds: [myEmbed] })
-  } else {
-    console.error('Discord channel not found')
-  }
+  channel.send({ embeds: [myEmbed] })
 }
 
 function formatTheMessage(records: Record[]) {

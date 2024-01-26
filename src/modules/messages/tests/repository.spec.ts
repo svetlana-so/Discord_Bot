@@ -2,6 +2,7 @@ import createTestDataBase from '@/tests/utils/createTestDataBase'
 import { createFor } from '@/tests/utils/records'
 import buildRepository from '../repository'
 import * as fixtures from './fixtures'
+import fetchGif from '@/utils/fetchGif'
 
 const db = await createTestDataBase()
 const repository = buildRepository(db)
@@ -13,15 +14,29 @@ await createSprints(fixtures.sprints)
 await createTemplates(fixtures.templates)
 await createStudents(fixtures.students)
 
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
+let url = ''
+const gif = {
+  fetchGif: () => 'http//:example.com',
+}
+
+const spy = vi.spyOn(gif, 'fetchGif').mockImplementation(() => url)
+url = 'http//:example.com'
+
 describe('createAccomplishment, getInformationForPosting', () => {
   it('should create accomplishment and return information about a specific student', async () => {
     await repository.createAccomplishment({
       studentId: 1,
       sprintId: 1,
       templateId: 1,
-      url: 'http//:example.com',
+      url: gif.fetchGif(),
     })
+
     const accomplishment = await repository.getInformationForPosting(1)
+    expect(spy).toHaveBeenCalled()
     expect(accomplishment).toHaveLength(1)
     expect(accomplishment).toEqual([
       {
@@ -49,12 +64,13 @@ describe('getAListOfAllCongratulatoryMessagesForASpecificUser', () => {
       },
     ])
   })
+
   it('it returns an empty array if the user is not found', async () => {
     const accomplishment =
       await repository.getAListOfAllCongratulatoryMessagesForASpecificUser(
         'julia'
       )
-    expect(accomplishment).toEqual([])
+    expect(accomplishment).toHaveLength(0)
   })
 })
 
@@ -73,6 +89,7 @@ describe('getAListOfAllCongratulatoryMessagesForASpecificSprint', () => {
         url: 'http//:example.com',
       },
     ])
+    expect(accomplishment).toHaveLength(1)
   })
 
   it('returns an empty array if there is no messages for the provided sprint code', async () => {

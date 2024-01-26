@@ -3,19 +3,32 @@ import createTestDataBase from '@/tests/utils/createTestDataBase'
 import createApp from '@/app'
 import { omit } from 'lodash/fp'
 import { studentsFactory, studentsMatcher } from './utuls'
+import { createFor } from '@/tests/utils/records'
 
 const db = await createTestDataBase()
-const { DISCORD_BOT_ID } = process.env
 
-if (!DISCORD_BOT_ID) {
-  throw new Error('Provide DISCORD_BOT_TOKEN in your environment variables')
-}
-
-const app = createApp(db, DISCORD_BOT_ID)
+const app = createApp(db)
+const createStudents = createFor(db, 'students')
 
 afterAll(() => db.destroy())
 afterEach(async () => {
   await db.deleteFrom('students').execute()
+})
+
+describe('GET', () => {
+  it('should return an empty list if there are no students', async () => {
+    const { body } = await supertest(app).get('/students').expect(200)
+    expect(body).toHaveLength(0)
+  })
+
+  it('should return a list of the existiong students', async () => {
+    await createStudents([
+      studentsFactory(),
+      studentsFactory({ name: 'Mikael Lind', username: 'lind' }),
+    ])
+    const { body } = await supertest(app).get('/students').expect(200)
+    expect(body).toHaveLength(2)
+  })
 })
 
 describe('POST', () => {

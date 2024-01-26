@@ -4,15 +4,11 @@ import { createFor } from '@/tests/utils/records'
 import * as fixtures from './fixtures'
 import createApp from '@/app'
 import fetchGif from '@/utils/fetchGif'
+import { StatusCodes } from 'http-status-codes'
 
 const db = await createTestDataBase()
-const { DISCORD_BOT_ID } = process.env
 
-if (!DISCORD_BOT_ID) {
-  throw new Error('Provide DISCORD_BOT_TOKEN in your environment variables')
-}
-
-const app = createApp(db, DISCORD_BOT_ID)
+const app = createApp(db)
 
 const createSprints = createFor(db, 'sprints')
 const createTemplates = createFor(db, 'templates')
@@ -61,5 +57,51 @@ describe('GET', () => {
         url: 'http//:example.com',
       },
     ])
+  })
+
+  it('should return an empty array of all congratulatory messages for a user that does not exist', async () => {
+    const response = await supertest(app)
+      .get('/messages')
+      .query({ username: 'dally' }) // Add query parameters using .query();
+
+    console.log(response.status) // Log the actual status code
+    expect(response.body).toHaveLength(0)
+  })
+
+  it('should return an array of all congratulatory messages for a spocific user', async () => {
+    await createMessages({
+      studentId: 1,
+      sprintId: 1,
+      templateId: 1,
+      url: 'http//:example.com',
+    })
+    const { body } = await supertest(app)
+      .get('/messages')
+      .query({ username: 'mikey' })
+    expect(body).toHaveLength(1)
+    expect(body).toEqual([
+      {
+        text: 'What an achievement! Congratulations, and let’s begin the celebration!',
+        name: 'Mikael Lind',
+        username: 'mikey',
+        title: 'First Steps Into Programming with Python: Project',
+        url: 'http//:example.com',
+      },
+    ])
+  })
+})
+
+describe('PATCH', () => {
+  it('should return a status METHOD_NOT_ALLOWED', async () => {
+    await createMessages({
+      studentId: 1,
+      sprintId: 1,
+      templateId: 1,
+      url: 'http//:example.com',
+    })
+
+    const { body } = await supertest(app).patch('/messages').expect(405)
+
+    expect(body.error.message).toEqual('Method not allowed')
   })
 })

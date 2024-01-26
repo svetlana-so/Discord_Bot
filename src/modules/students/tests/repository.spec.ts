@@ -23,3 +23,17 @@ describe('addStudent', () => {
     expect(studentInDataBase).toEqual([student])
   })
 })
+
+describe('findAll', () => {
+  it('should return a list of all students', async () => {
+    await createStudents([
+      studentsFactory({ name: 'Mikael Lind', username: 'lind' }),
+      studentsFactory({ name: 'Daniel Pedersen', username: 'dally' }),
+    ])
+    const students = await repository.findAll()
+    expect(students).toHaveLength(2)
+    expect(students[0]).toEqual(
+      studentsMatcher({ name: 'Mikael Lind', username: 'lind' })
+    )
+  })
+})

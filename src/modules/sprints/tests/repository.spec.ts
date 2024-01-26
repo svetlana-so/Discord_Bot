@@ -15,7 +15,7 @@ afterEach(async () => {
 })
 
 describe('findAll', () => {
-  it('should create a sprint', async () => {
+  it('should return a list of sprints', async () => {
     await createSprints([
       sprintsFactory({
         sprintCode: 'WD_1.1',

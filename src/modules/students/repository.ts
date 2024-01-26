@@ -1,6 +1,6 @@
 import type { Database, Students } from '@/database'
 import { keys } from './schema'
-import { Insertable, Updateable, Selectable } from 'kysely'
+import { Insertable, Selectable } from 'kysely'
 
 const TABLE = 'students'
 type Row = Students

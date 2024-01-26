@@ -48,5 +48,16 @@ export default (db: Database) => {
       return record
     })
   )
+  router.delete(
+    '/:id(\\d+)',
+    jsonRoute(async (req) => {
+      const id = schema.parseId(req.params.id)
+      const record = await sprints.remove(id)
+      if (!record) {
+        throw new SprintNotFound()
+      }
+      return record
+    })
+  )
   return router
 }

@@ -3,16 +3,10 @@ import createTestDataBase from '@/tests/utils/createTestDataBase'
 import { createFor } from '@/tests/utils/records'
 import { templatesFactory, templatesMatcher } from './utils'
 import createApp from '@/app'
-import { omit } from 'lodash/fp'
 
 const db = await createTestDataBase()
-const { DISCORD_BOT_ID } = process.env
 
-if (!DISCORD_BOT_ID) {
-  throw new Error('Provide DISCORD_BOT_TOKEN in your environment variables')
-}
-
-const app = createApp(db, DISCORD_BOT_ID)
+const app = createApp(db)
 
 const createTemplates = createFor(db, 'templates')
 
@@ -67,10 +61,22 @@ describe('GET/:id', () => {
 
 describe('POST', () => {
   it('should return 201 if the template is created', async () => {
+    await createTemplates([
+      templatesFactory({
+        id: 1234,
+      }),
+    ])
     const { body } = await supertest(app)
       .get('/templates')
       .send(templatesFactory())
       .expect(201)
+
+    expect(body).toEqual([
+      {
+        id: 1234,
+        text: 'What an achievement! Congratulations, and let’s begin the celebration!',
+      },
+    ])
   })
 })
 
@@ -85,16 +91,23 @@ describe('PATCH', () => {
     await createTemplates([templatesFactory({ id })])
     await supertest(app)
       .patch(`/templates/${id}`)
-      .send({ text: 'Usdated text!' })
+      .send({ text: 'Updated text!' })
       .expect(200)
 
     const { body } = await supertest(app).get('/templates/888').expect(200)
-    expect(body).toEqual(templatesMatcher({ id, text: 'Usdated text!' }))
+    expect(body).toEqual(templatesMatcher({ id, text: 'Updated text!' }))
   })
 })
 
-describe('DELETE', () => {
-  it('it does not supported', async () => {
-    await supertest(app).delete('/templates/123').expect(404)
+describe('DELITE', () => {
+  it('it delite the sprint by provided id', async () => {
+    const id = 1234
+    await createTemplates([templatesFactory({ id })])
+    await supertest(app).delete('/templates/1234').expect(200)
+  })
+  it('returns 404 if sprint is not found', async () => {
+    const id = 1234
+    await createTemplates([templatesFactory({ id })])
+    await supertest(app).delete('/templates/999').expect(404)
   })
 })
