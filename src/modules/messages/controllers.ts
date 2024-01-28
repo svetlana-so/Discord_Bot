@@ -8,21 +8,22 @@ import { Client } from 'discord.js'
 import { createChannel } from '@/utils/createChannel'
 import sendMessage from '@/utils/sendEmded'
 import * as schema from './schema'
-import { getRandomTemplateId } from '@/utils/getRamdomTemplateId'
 import fetchGif from '@/utils/fetchGif'
+import buildTemplateRepositore from '../templates_messages/repository'
 
 const DISCORD_CHANNEL_ID = process.env.DISCORD_CHANNEL_ID
 
 export default (db: Database, bot?: Client) => {
   const router = Router()
   const messages = buildRepository(db)
+  const templates = buildTemplateRepositore(db)
 
   router.post(
     '/',
     jsonRoute(async (req) => {
       try {
         const body = schema.parseInsertable(req.body)
-        const randomTemplateId = await getRandomTemplateId(db)
+        const { id: randomTemplateId } = await templates.findRandomId()
         body.templateId = randomTemplateId
         body.url = await fetchGif()
         //@ts-ignore0
@@ -48,7 +49,7 @@ export default (db: Database, bot?: Client) => {
     jsonRoute(async (req) => {
       const { username, sprint } = req.query
 
-      if ( req.query.username === 'string') {
+      if (req.query.username === 'string') {
         return messages.getAListOfAllCongratulatoryMessagesForASpecificUser(
           username as string
         )

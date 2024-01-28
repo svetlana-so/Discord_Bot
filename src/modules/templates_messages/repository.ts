@@ -1,10 +1,11 @@
-import { Insertable, Updateable, Selectable } from 'kysely'
+import { Insertable, Updateable, Selectable, sql } from 'kysely'
 import { Database, Templates } from '@/database'
 import { keys } from './schema'
 
 const TABLE = 'templates'
 type Row = Templates
 type RowWithoutId = Omit<Row, 'id'>
+type RoWithoutText = Omit<Row, 'text'>
 type RowInsert = Insertable<RowWithoutId>
 type RowUpdate = Updateable<RowWithoutId>
 type RowSelect = Selectable<Row>
@@ -44,6 +45,14 @@ export default (db: Database) => ({
       .deleteFrom(TABLE)
       .where('id', '=', id)
       .returning(keys)
+      .executeTakeFirst()
+  },
+  findRandomId(): Promise<RoWithoutText | any> {
+    return db
+      .selectFrom(TABLE)
+      .select(['id'])
+      .orderBy(sql`random()`)
+      .limit(1)
       .executeTakeFirst()
   },
 })

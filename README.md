@@ -20,7 +20,7 @@ npm install
 
 ```bash
 DATABASE_URL=./data/database.db
-DISCORD_BOT_ID=your_id_here
+DISCORD_BOT_ID=your_discord_bot_id_here
 GIPHY_API=your_API
 DISCORD_CHANNEL_ID=your_channel_id
 ```

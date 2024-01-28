@@ -87,3 +87,16 @@ describe('remove', () => {
     expect(removedTemplate).toBeUndefined()
   })
 })
+
+describe('findRandomId', () => {
+  it('should return a random id', async () => {
+    await createTemplates([
+      templatesFactory({ text: 'Text 1' }),
+      templatesFactory({ text: 'Text 2' }),
+    ])
+    const templates = await repository.findRandomId()
+    expect(templates).toEqual({
+      id: expect.any(Number),
+    })
+  })
+})
