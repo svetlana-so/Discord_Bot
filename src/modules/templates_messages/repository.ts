@@ -5,7 +5,6 @@ import { keys } from './schema'
 const TABLE = 'templates'
 type Row = Templates
 type RowWithoutId = Omit<Row, 'id'>
-type RoWithoutText = Omit<Row, 'text'>
 type RowInsert = Insertable<RowWithoutId>
 type RowUpdate = Updateable<RowWithoutId>
 type RowSelect = Selectable<Row>
@@ -47,7 +46,7 @@ export default (db: Database) => ({
       .returning(keys)
       .executeTakeFirst()
   },
-  findRandomId(): Promise<RoWithoutText | any> {
+  findRandomId(): Promise<any> {
     return db
       .selectFrom(TABLE)
       .select(['id'])

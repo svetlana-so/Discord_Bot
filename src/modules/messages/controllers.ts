@@ -24,10 +24,15 @@ export default (db: Database, bot?: Client) => {
       try {
         const body = schema.parseInsertable(req.body)
         const { id: randomTemplateId } = await templates.findRandomId()
-        body.templateId = randomTemplateId
-        body.url = await fetchGif()
-        //@ts-ignore0
-        await messages.createAccomplishment(body)
+        const url = await fetchGif()
+
+        const record = {
+          ...body,
+          templateId: randomTemplateId,
+          url: url,
+        }
+        // @ts-ignore
+        await messages.createAccomplishment(record)
         const studentId = schema.parseId(body.studentId)
         const records = await messages.getInformationForPosting(studentId)
 

@@ -7,9 +7,9 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 export interface Messages {
   sprintId: number;
   studentId: number;
-  templateId: number | null;
+  templateId: number;
   timestamp: Generated<string>;
-  url: string | null;
+  url: string;
 }
 
 export interface Sprints {

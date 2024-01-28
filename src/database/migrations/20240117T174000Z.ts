@@ -5,8 +5,8 @@ export async function up(db: Kysely<SqliteDatabase>) {
   await db.schema
     .createTable('messages')
     .ifNotExists()
-    .addColumn('timestamp', 'timestamp', (col) =>
-      col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
+    .addColumn('timestamp', 'timestamp', (c) =>
+      c.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
     )
     .addColumn('student_id', 'integer', (c) =>
       c.notNull().references('students.id')
@@ -14,7 +14,9 @@ export async function up(db: Kysely<SqliteDatabase>) {
     .addColumn('sprint_id', 'integer', (c) =>
       c.notNull().references('sprints.id')
     )
-    .addColumn('template_id', 'integer', (c) => c.references('templates.id'))
-    .addColumn('url', 'text')
+    .addColumn('template_id', 'integer', (c) =>
+      c.references('templates.id').notNull()
+    )
+    .addColumn('url', 'text', (c) => c.notNull())
     .execute()
 }
