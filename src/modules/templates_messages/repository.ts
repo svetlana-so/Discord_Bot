@@ -46,7 +46,7 @@ export default (db: Database) => ({
       .returning(keys)
       .executeTakeFirst()
   },
-  findRandomId(): Promise<any> {
+  findRandomId(): Promise<{ id: number } | undefined> {
     return db
       .selectFrom(TABLE)
       .select(['id'])

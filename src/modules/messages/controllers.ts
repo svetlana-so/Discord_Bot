@@ -23,22 +23,28 @@ export default (db: Database, bot?: Client) => {
     jsonRoute(async (req) => {
       try {
         const body = schema.parseInsertable(req.body)
-        const { id: randomTemplateId } = await templates.findRandomId()
+        const randomId = await templates.findRandomId()
+        if (!randomId) {
+          throw new Error()
+        }
+        const { id: randomTemplateId } = randomId
         const url = await fetchGif()
+        if (!url) {
+          throw new Error()
+        }
 
         const record = {
           ...body,
           templateId: randomTemplateId,
           url: url,
         }
-        // @ts-ignore
+
         await messages.createAccomplishment(record)
         const studentId = schema.parseId(body.studentId)
         const records = await messages.getInformationForPosting(studentId)
 
-        // @ts-ignore
         const channel = await createChannel(bot, DISCORD_CHANNEL_ID)
-        // @ts-ignore
+
         await sendMessage(channel, records)
 
         return { message: 'Accomplishment created successfully.' }

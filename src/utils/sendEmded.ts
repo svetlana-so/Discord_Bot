@@ -1,4 +1,4 @@
-import { TextChannel, EmbedBuilder } from 'discord.js'
+import { TextChannel, EmbedBuilder, Channel } from 'discord.js'
 
 type Record = {
   username: string
@@ -8,7 +8,7 @@ type Record = {
 }
 
 export default async function sendMessage(
-  channel: TextChannel,
+  channel: Channel | undefined,
   records: Record[]
 ) {
   const formattedMessage = formatTheMessage(records)
@@ -19,6 +19,10 @@ export default async function sendMessage(
     .setImage(records[0].url)
     .setTimestamp()
 
+  if (!channel || !(channel instanceof TextChannel)) {
+    console.warn('Invalid channel provided for sending messages.')
+    return
+  }
   channel.send({ embeds: [myEmbed] })
 }
 
