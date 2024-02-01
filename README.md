@@ -69,9 +69,6 @@ npm run dev
 
       "studentId": 3,
       "sprintId": 3
-      ,
-      "templateId": null,
-      "url": null
 }
 ```
 

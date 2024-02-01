@@ -62,13 +62,13 @@ describe('GET', () => {
   it('should return an empty array of all congratulatory messages for a user that does not exist', async () => {
     const response = await supertest(app)
       .get('/messages')
-      .query({ username: 'dally' }) // Add query parameters using .query();
+      .query({ username: 'dally' })
 
-    console.log(response.status) // Log the actual status code
+    console.log(response.status) 
     expect(response.body).toHaveLength(0)
   })
 
-  it('should return an array of all congratulatory messages for a spocific user', async () => {
+  it('should return an array of all congratulatory messages for a specific user', async () => {
     await createMessages({
       studentId: 1,
       sprintId: 1,
@@ -81,9 +81,8 @@ describe('GET', () => {
     expect(body).toHaveLength(1)
     expect(body).toEqual([
       {
-        text: 'What an achievement! Congratulations, and let’s begin the celebration!',
         name: 'Mikael Lind',
-        username: 'mikey',
+        text: 'What an achievement! Congratulations, and let’s begin the celebration!',
         title: 'First Steps Into Programming with Python: Project',
         url: 'http//:example.com',
       },

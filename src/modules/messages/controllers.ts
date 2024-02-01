@@ -36,10 +36,11 @@ export default (db: Database, bot?: Client) => {
         const record = {
           ...body,
           templateId: randomTemplateId,
-          url: url,
+          url,
         }
 
         await messages.createAccomplishment(record)
+
         const studentId = schema.parseId(body.studentId)
         const records = await messages.getInformationForPosting(studentId)
 
@@ -60,12 +61,12 @@ export default (db: Database, bot?: Client) => {
     jsonRoute(async (req) => {
       const { username, sprint } = req.query
 
-      if (req.query.username === 'string') {
+      if (typeof username === 'string') {
         return messages.getAListOfAllCongratulatoryMessagesForASpecificUser(
           username as string
         )
       }
-      if (typeof req.query.sprint === 'string') {
+      if (typeof sprint === 'string') {
         return await messages.getAListOfAllCongratulatoryMessagesForASpecificSprint(
           sprint as string
         )
@@ -76,5 +77,6 @@ export default (db: Database, bot?: Client) => {
     }, StatusCodes.OK)
   )
   router.route('/').patch(unsupportedRoute)
+  router.route('/').delete(unsupportedRoute)
   return router
 }

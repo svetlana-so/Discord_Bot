@@ -63,6 +63,7 @@ export default (db: Database) => ({
         'sprints.title',
         'templates.text',
         'messages.url',
+       /*  'students.username' */
       ])
       .where('students.username', '=', username)
       .execute(),
